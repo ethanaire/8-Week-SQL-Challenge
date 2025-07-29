@@ -46,4 +46,20 @@ ORDER BY sales.customer_id ASC;
 
 ***
 
+***2. How many days has each customer visited the restaurant?**
+
+````sql
+SELECT
+  customer_id,
+  COUNT(DISTINCT order_date) AS visit_count
+FROM dannys_diner.sales
+GROUP BY customer_id;
+````
+
+#### Steps:
+- Use **COUNT(DISTINCT `order_date`)** to count the unique number of visits per customer.
+- Use the **DISTINCT** to avoid duplicate counting of days.
+
+
+
 
