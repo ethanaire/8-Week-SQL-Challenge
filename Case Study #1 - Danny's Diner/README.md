@@ -46,7 +46,7 @@ ORDER BY sales.customer_id ASC;
 
 ***
 
-***2. How many days has each customer visited the restaurant?**
+**2. How many days has each customer visited the restaurant?**
 
 ````sql
 SELECT
@@ -59,6 +59,36 @@ GROUP BY customer_id;
 #### Steps:
 - Use **COUNT(DISTINCT `order_date`)** to count the unique number of visits per customer.
 - Use the **DISTINCT** to avoid duplicate counting of days.
+
+***
+
+**3. What was the first item from the menu purchased by each customer?**
+
+````sql
+WITH ordered_sales AS (
+  SELECT
+    sales.customer_id,
+    sales.order_date,
+    menu.product_name,
+    DENSE_RANK() OVER (
+      PARTITION BY sales.customer_id
+      ORDER BY sales.order_date) AS rank
+  FROM dannys_diner.sales
+  INNER JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+)
+
+SELECT
+  customer_id,
+  product_name
+FROM ordered_sales
+WHERE rank = 1
+GROUP BY customer_id, product_name;
+````
+
+#### Steps:
+- Create CTE named `ordered_sales_cte`. Within the CTE, create a new column `rank` and calculate the row number using **DENSE_RANK()**. The **PARTITION BY** clause divides the data by `customer_id`, and the **ORDER BY** clause orders the rows within each partition by `order_date`.
+- Select the relevant columns and apply a filter in the **WHERE** clause to retrieve only the rows where the rank column equals 1.
 
 
 
