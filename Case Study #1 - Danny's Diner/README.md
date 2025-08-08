@@ -90,6 +90,24 @@ GROUP BY customer_id, product_name;
 - Create CTE named `ordered_sales_cte`. Within the CTE, create a new column `rank` and calculate the row number using **DENSE_RANK()**. The **PARTITION BY** clause divides the data by `customer_id`, and the **ORDER BY** clause orders the rows within each partition by `order_date`.
 - Select the relevant columns and apply a filter in the **WHERE** clause to retrieve only the rows where the rank column equals 1.
 
+***
 
+**4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
+
+````sql
+SELECT 
+  menu.product_name,
+  COUNT(sales.product_id) AS most_purchased_item
+FROM dannys_diner.sales
+INNER JOIN dannys_diner.menu
+  ON sales.product_id = menu.product_id
+GROUP BY menu.product_name
+ORDER BY most_purchased_item DESC
+LIMIT 1;
+````
+
+#### Steps:
+- Use **COUNT** on the `product_id` column and **ORDER BY** the result in descending order with `most_purchased` field.
+- Use **LIMIT** 1 clause to filter and retrieve the highest number of purchased items.
 
 
