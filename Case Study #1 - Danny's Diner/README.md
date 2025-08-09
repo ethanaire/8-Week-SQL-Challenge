@@ -110,4 +110,34 @@ LIMIT 1;
 - Use **COUNT** on the `product_id` column and **ORDER BY** the result in descending order with `most_purchased` field.
 - Use **LIMIT** 1 clause to filter and retrieve the highest number of purchased items.
 
+***
 
+**5. Which item was the most popular for each customer?**
+
+````sql
+WITH most_popular AS (
+  SELECT 
+    sales.customer_id, 
+    menu.product_name, 
+    COUNT(menu.product_id) AS order_count,
+    DENSE_RANK() OVER (
+      PARTITION BY sales.customer_id 
+      ORDER BY COUNT(sales.customer_id) DESC) AS rank
+  FROM dannys_diner.menu
+  INNER JOIN dannys_diner.sales
+    ON menu.product_id = sales.product_id
+  GROUP BY sales.customer_id, menu.product_name
+)
+
+SELECT 
+  customer_id, 
+  product_name, 
+  order_count
+FROM most_popular 
+WHERE rank = 1;
+````
+
+#### Steps:
+- Create a CTE `fav_item_cte` by joining the `menu` table and `sales` table. Group results by `sales.customer_id` and `menu.product_name` and calculate the count of `menu.product_id` for each group. 
+- Use **DENSE_RANK()** function to calculate the ranking of each `sales.customer_id` partition based on the count of orders **COUNT(`sales.customer_id`)** in descending order.
+- In the outer query, select the appropriate columns to retrieve only the rows where the rank column equals 1, representing the rows with the highest order count for each customer.
